@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="login">
+
+
+	<select id="logincheck" parameterType="HashMap" resultType="MemberVO">
+		select
+		*
+
+		from
+		HD_MEMBER
+
+
+		where
+		mb_id = #{id} and
+		mb_pass = #{password}
+
+
+
+	</select>
+	
+	<insert id="join" parameterType="HashMap">
+		INSERT into HD_MEMBER
+		(
+		MB_SEQ,
+		MB_ID,
+		MB_PASS,
+		MB_NAME,
+		MB_RANK
+		)
+		
+		VALUES
+		(
+		HD_MEMBER_SEQ.nextval,
+		#{join_id},
+		#{join_pass},
+		#{join_name},
+		#{join_rank}
+		)
+	
+	</insert>
+	
+	<select id="join_idcheck" parameterType="String" resultType="int">
+	SELECT 
+	
+	count(*)
+	 
+	FROM
+	
+	hd_member
+	
+	WHERE
+	
+	mb_id = #{join_idcheck}
+	</select>
+	
+	<select id="join_list" resultType="MemberVO">
+	SELECT
+	
+	*
+	
+	FROM
+	
+	hd_member	
+	</select>
+	
+	<select id="join_edit" resultType="MemberVO" parameterType="String">
+	SELECT
+	
+	*
+	
+	FROM
+	
+	hd_member
+	
+	WHERE
+	
+	mb_id = #{edit_id}
+	
+	
+	</select>
+	
+	<delete id="member_delete" parameterType="MemberVO">
+	DELETE
+	
+	FROM
+	
+	hd_member
+	
+	WHERE
+	
+	mb_id = #{mb_id}
+	
+	
+	</delete>
+	
+	<update id="memeber_update" parameterType="MemberVO">
+	
+	UPDATE 
+	hd_member
+	
+	SET
+	
+	mb_pass = #{mb_pass},
+	mb_name = #{mb_name},
+	mb_rank = #{mb_rank}
+	
+	WHERE
+	mb_id = #{mb_id}
+	
+	
+	
+	</update>
+</mapper>

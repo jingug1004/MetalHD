@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="employeeInsert">
+
+    <insert id="insertEmp" parameterType="HdEmployeeVO">
+          insert into 
+          emp(
+          emp_no,
+          age,
+          emp_name,
+          people_no,
+          eng_name
+          )
+          values(
+          #{emp_no},
+          #{age},
+          #{emp_name},
+          #{people_no},
+          #{eng_name}
+          )
+        </insert>
+        
+        <insert id="personalInfo" parameterType="HdEmployeeVO">
+        insert into
+        personal_info(
+        emp_no,
+        address,
+        handphone_num,
+        birthday,
+        gender
+        )
+        values(
+        #{emp_no},
+        #{address},
+        #{handphone_num},
+        #{birthday},
+        #{gender}
+        )
+        </insert>
+        
+        <insert id="management" parameterType="HdEmployeeVO">
+        insert into
+        personnel_management(
+        emp_no,
+        emp_position,
+        salary,
+        depart_name
+        )
+        values(
+        #{emp_no},
+        #{emp_position},
+        #{salary},
+        #{depart_name}
+        )
+        </insert>
+        
+        <insert id="hobbyInsert" parameterType="HdEmployeeVO">
+        insert into
+        hobby(
+        emp_no,
+        hobby_name,
+        special_ability
+        )
+        values(
+        #{emp_no},
+        #{hobby_name},
+        #{special_ability}
+        )
+        </insert>
+        <insert id="companyInsert" parameterType="HdEmployeeVO">
+        insert into
+        company(
+        emp_no,
+        entrance_date,
+        quit_date
+        )
+        values(
+        #{emp_no},
+        #{entrance_date},
+        #{quit_date}
+        )
+       </insert>
+       
+       <insert id="militaryInsert" parameterType="HdEmployeeVO">
+       insert into
+       military(
+       emp_no,
+       arm_service,
+       military_class,
+       military_start_date,
+       military_end_date,
+       military_reason
+       )
+       values(
+       #{emp_no},
+       #{arm_service},
+       #{military_class},
+       #{military_start_date},
+       #{military_end_date},
+       #{military_reason}
+       )
+       </insert>
+       
+       <insert id="licenseInsert" parameterType="HdEmpLicenseVO">
+       insert into
+       license(
+       emp_no,
+       license_name,
+       license_date
+       )
+       values(
+       #{emp_no},
+       #{license_name},
+       #{license_date}
+       )
+       </insert>
+       
+       <insert id="careerInsert" parameterType="HdEmpCareerVO">
+       insert into
+       career(
+       emp_no,
+       company_name,
+       work_period,
+       career_depart,
+       career_position
+       )
+       values(
+       #{emp_no},
+       #{company_name},
+       #{work_period},
+       #{career_depart},
+       #{career_position}
+       )
+       </insert>
+       
+       <insert id="familyInsert" parameterType="HdEmpFamilyVO">
+       insert into
+       family(
+       emp_no,
+       family_name,
+       family_age,
+       family_relation
+       )
+       values(
+       #{emp_no},
+       #{family_name},
+       #{family_age},
+       #{family_relation}
+       )
+       </insert>
+       
+       <insert id="schoolInsert" parameterType="HdEmpAcademicVO">
+       insert into
+       academic(
+       emp_no,
+       school_name,
+       school_location,
+       school_start_date,
+       school_end_date
+       )
+       values(
+       #{emp_no},
+       #{school_name},
+       #{school_location},
+       #{school_start_date},
+       #{school_end_date}
+       )
+       </insert>
+       
+       <insert id="imageUpload" parameterType="HdEmpFileVO">
+       insert into emp_file
+			   (emp_no, no, orifilename, realfilename, filepath)
+	    values (#{emp_no}, emp_file_seq.nextVal, #{oriFileName}, 
+	    		#{realFileName}, #{filePath})
+       </insert>
+
+
+</mapper>

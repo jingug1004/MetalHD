@@ -1,0 +1,461 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="manufacture">
+
+	<select id="List" resultType="HdProductionVO">
+		<![CDATA[
+			SELECT DISTINCT 
+				ORDER_NAME
+			FROM 
+				HD_PRODUCTION
+			Group By
+				ORDER_NAME
+			ORDER BY
+				ORDER_NAME
+		]]>
+	</select>
+
+
+	<select id="allList" resultType="HDAlldataVO">
+		<![CDATA[
+		SELECT 
+			ROW_NUMBER() OVER (ORDER BY pn.ORDER_NUM DESC) PRODUCTION_SEQ,
+			pn.ORDER_NUM ORDER_NUM,
+			pn.CONTRACT_NAME CONTRACT_NAME,
+			pn.SALES SALES,
+			pn.ORDER_NAME ORDER_NAME,
+			pn.MANAGER_NAME MANAGER_NAME,
+			pn.REQUEST_DATE REQUEST_DATE,
+			pn.PRODUCTION_DATE PRODUCTION_DATE,
+			decode(pn.ORDER_STATES,'1','완료','미납') ORDER_STATES,
+			pn.PRODUCTION_REMARK PRODUCTION_REMARK,
+			pn.TOTAL_PRICE TOTAL_PRICE,
+			pn.P_DATE P_DATE,
+			pn.REQUEST_EXPECTED REQUEST_EXPECTED,
+			pn.ORDER_DATE ORDER_DATE,
+			ps.LOT_NO LOT_NO,
+			ps.ITEM ITEM,
+			ps.SIZE_L SIZE_L,
+			ps.SIZE_S SIZE_S,
+			ps.SIZE_T SIZE_T,
+			ps.SIZE_P SIZE_P,
+			ps.SIZE_M SIZE_M,
+			ps.VOLUME VOLUME,
+			ps.PRICE PRICE,
+			ps.PRODUCTS_REMARK PRODUCTS_REMARK,
+			ps.ORDER_ITEM ORDER_ITEM,
+			ps.T_PRICE T_PRICE 
+		FROM
+		    HD_Production pn,HD_Products ps
+        	
+		]]>
+
+		<where>
+
+			ps.order_num(+) = pn.order_num
+
+			<if test="order_num != '' and order_num != null">
+				and pn.order_num = #{order_num}
+			</if>
+
+			<if test="company_name != '' and company_name != null">
+				and pn.order_name = #{company_name}
+			</if>
+
+			<if test="nappum_condition != '' and nappum_condition != null">
+				and pn.order_states = #{nappum_condition}
+			</if>
+
+			<trim prefix="and pn.order_num like 'HD%'">
+				<if test="wheredate !='' and wheredate != null">
+					and pn.ORDER_NUM like '%-%'
+					and pn.REQUEST_EXPECTED like '%-%'
+					and
+					pn.REQUEST_DATE like '%-%'
+					and pn.PRODUCTION_DATE like '%-%'
+					<choose>
+						<when test="wheredate='order_date'">
+							<if test="sedate != '' and sedate != null">
+								and to_date(substr(pn.ORDER_NUM,3,7)) <![CDATA[<=]]>
+								to_date(#{sedate})
+							</if>
+
+							<if test="ssdate != '' and ssdate != null">
+								and to_date(substr(pn.ORDER_NUM,3,7)) <![CDATA[>=]]>
+								to_date(#{ssdate})
+							</if>
+						</when>
+						<when test="wheredate='request_expected'">
+							<if test="sedate != '' and sedate != null">
+								and to_date(pn.REQUEST_EXPECTED) <![CDATA[<=]]>
+								to_date(#{sedate})
+							</if>
+
+							<if test="ssdate != '' and ssdate != null">
+								and to_date(pn.REQUEST_EXPECTED) <![CDATA[>=]]>
+								to_date(#{ssdate})
+							</if>
+						</when>
+						<when test="wheredate='request_date'">
+							<if test="sedate != '' and sedate != null">
+								and to_date(pn.REQUEST_DATE) <![CDATA[<=]]>
+								to_date(#{sedate})
+							</if>
+
+							<if test="ssdate != '' and ssdate != null">
+								and to_date(pn.REQUEST_DATE) <![CDATA[>=]]>
+								to_date(#{ssdate})
+							</if>
+						</when>
+						<when test="wheredate='production_date'">
+							<if test="sedate != '' and sedate != null">
+								and to_date(pn.PRODUCTION_DATE) <![CDATA[<=]]>
+								to_date(#{sedate})
+							</if>
+
+							<if test="ssdate != '' and ssdate != null">
+								and to_date(pn.PRODUCTION_DATE) <![CDATA[>=]]>
+								to_date(#{ssdate})
+							</if>
+						</when>
+					</choose>
+				</if>
+			</trim>
+		</where>
+
+		<trim prefix="order by">
+			<trim suffixOverrides=",">
+				<choose>
+					<when test="sort == 'ASC' and sortName == 'ORDER_NUM'">
+						substr(order_num, 3,7) desc,
+						substr(order_num,-1,2)
+						asc
+					</when>
+					<when test="sortName == 'ORDER_NUM' and sort == 'DESC'">
+						substr(order_num, 3,7) asc,
+						substr(order_num,-1,2)
+						asc
+					</when>
+					<otherwise>
+						substr(order_num, 3,7) desc,
+						substr(order_num,-1,2)
+						asc
+					</otherwise>
+				</choose>
+			</trim>
+
+			<trim prefix=",">
+				<if
+					test="sortName != '' and sortName != 'null' and sortName != 'ORDER_NUM' and sort != ''">
+					${sortName} ${sort}
+				</if>
+			</trim>
+		</trim>
+	</select>
+
+	<select id="allList_print" resultType="HDAlldataVO">
+		<![CDATA[
+		SELECT
+				ROW_NUMBER() OVER (ORDER BY pn.ORDER_NUM DESC) PRODUCTION_SEQ,
+				pn.ORDER_NUM ORDER_NUM,
+				pn.CONTRACT_NAME CONTRACT_NAME,
+				pn.SALES SALES,
+				pn.ORDER_NAME ORDER_NAME,
+				pn.MANAGER_NAME MANAGER_NAME,
+				pn.REQUEST_DATE REQUEST_DATE,
+				pn.PRODUCTION_DATE PRODUCTION_DATE,
+				decode(pn.ORDER_STATES,'1','완료','미납') ORDER_STATES,
+				pn.PRODUCTION_REMARK PRODUCTION_REMARK,
+				pn.TOTAL_PRICE TOTAL_PRICE,
+				pn.P_DATE P_DATE,
+				pn.REQUEST_EXPECTED REQUEST_EXPECTED,
+				pn.ORDER_DATE ORDER_DATE,
+				oc.ORDER_DELEGATE_NAME ORDER_DELEGATE_NAME,
+				oc.ORDER_LOCATION ORDER_LOCATION,
+				oc.ORDER_TEL ORDER_TEL,
+				oc.ORDER_FAX ORDER_FAX,
+				om.MANAGER_TEL MANAGER_TEL,
+				ps.LOT_NO LOT_NO,
+				ps.ITEM ITEM,
+				ps.SIZE_L SIZE_L,
+				ps.SIZE_S SIZE_S,
+				ps.SIZE_T SIZE_T,
+				ps.SIZE_P SIZE_P,
+				ps.SIZE_M SIZE_M,
+				ps.VOLUME VOLUME,
+				ps.PRICE PRICE,
+				ps.PRODUCTS_REMARK PRODUCTS_REMARK,
+				ps.ORDER_ITEM ORDER_ITEM,
+				ps.T_PRICE T_PRICE,
+				fac.M_NO M_NO,
+				cnee.CONSIGNEE_RANK CONSIGNEE_RANK,
+				cnee.CONSIGNEE_NAME CONSIGNEE_NAME,
+				cnee.CONSIGNEE_TEL CONSIGNEE_TEL,
+				cnee.CONSIGNEE_LOCATION CONSIGNEE_LOCATION,
+				ds.DISPATCHER_COMPANY DISPATCHER_COMPANY,
+				ds.DISPATCHER_NO DISPATCHER_NO,
+				ds.DISPATCHER_TYPE DISPATCHER_TYPE,
+				ds.DISPATCHER_TEL DISPATCHER_TEL,
+				ds.DISPATCHER_FARE DISPATCHER_FARE,
+				ds.DISPATCHER_WEIGHT DISPATCHER_WEIGHT
+			FROM
+				HD_PRODUCTION pn LEFT OUTER JOIN HD_ORDER_COMPANY oc ON pn.ORDER_NUM = oc.ORDER_NUM
+							     LEFT OUTER JOIN HD_MANAGERINFO om ON pn.MANAGER_NAME = om.MANAGER_NAME
+							     LEFT OUTER JOIN HD_PRODUCTS ps ON pn.ORDER_NUM = ps.ORDER_NUM
+							     LEFT OUTER JOIN HD_FACTORY fac ON ps.LOT_NO = fac.LOT_NO
+							     LEFT OUTER JOIN HD_CONSIGNEE cnee ON pn.ORDER_NUM = cnee.ORDER_NUM
+							     LEFT OUTER JOIN HD_DISPATCHER ds ON pn.ORDER_NUM = ds.ORDER_NUM
+		]]>
+
+		<where>
+
+			<if test="order_num != '' and order_num != null">
+				and pn.order_num = #{order_num}
+			</if>
+
+			<if test="company_name != '' and company_name != null">
+				and pn.order_name = #{company_name}
+			</if>
+
+			<if test="nappum_condition != '' and nappum_condition != null">
+				and pn.order_states = #{nappum_condition}
+			</if>
+
+			<trim prefix="and pn.order_num like 'HD%'">
+				<if test="wheredate != '' and wheredate != null">
+					and pn.ORDER_NUM like '%-%'
+					and pn.REQUEST_EXPECTED like '%-%'
+					and
+					pn.REQUEST_DATE like '%-%'
+					and pn.PRODUCTION_DATE like '%-%'
+					<choose>
+						<when test="wheredate='order_date'">
+							<if test="sedate != '' and sedate != null">
+								and to_date(substr(pn.ORDER_NUM,3,7)) <![CDATA[<=]]>
+								to_date(#{sedate})
+							</if>
+
+							<if test="ssdate != '' and ssdate != null">
+								and to_date(substr(pn.ORDER_NUM,3,7)) <![CDATA[>=]]>
+								to_date(#{ssdate})
+							</if>
+						</when>
+						<when test="wheredate='request_expected'">
+							<if test="sedate != '' and sedate != null">
+								and to_date(pn.REQUEST_EXPECTED) <![CDATA[<=]]>
+								to_date(#{sedate})
+							</if>
+
+							<if test="ssdate != '' and ssdate != null">
+								and to_date(pn.REQUEST_EXPECTED) <![CDATA[>=]]>
+								to_date(#{ssdate})
+							</if>
+						</when>
+						<when test="wheredate='request_date'">
+							<if test="sedate != '' and sedate != null">
+								and to_date(pn.REQUEST_DATE) <![CDATA[<=]]>
+								to_date(#{sedate})
+							</if>
+
+							<if test="ssdate != '' and ssdate != null">
+								and to_date(pn.REQUEST_DATE) <![CDATA[>=]]>
+								to_date(#{ssdate})
+							</if>
+						</when>
+						<when test="wheredate='production_date'">
+							<if test="sedate != '' and sedate != null">
+								and to_date(pn.PRODUCTION_DATE) <![CDATA[<=]]>
+								to_date(#{sedate})
+							</if>
+
+							<if test="ssdate != '' and ssdate != null">
+								and to_date(pn.PRODUCTION_DATE) <![CDATA[>=]]>
+								to_date(#{ssdate})
+							</if>
+						</when>
+					</choose>
+				</if>
+			</trim>
+		</where>
+
+		<trim prefix="order by">
+			<trim suffixOverrides=",">
+				<choose>
+					<when test="sort == 'ASC' and sortName == 'ORDER_NUM'">
+						substr(order_num, 3,7) desc,
+						substr(order_num,-1,2)
+						asc
+					</when>
+					<when test="sortName == 'ORDER_NUM' and sort == 'DESC'">
+						substr(order_num, 3,7) asc,
+						substr(order_num,-1,2)
+						desc
+					</when>
+					<otherwise>
+						substr(order_num, 3,7) desc,
+						substr(order_num,-1,2)
+						asc
+					</otherwise>
+				</choose>
+			</trim>
+
+			<trim prefix=",">
+				<if
+					test="sortName != '' and sortName != 'null' and sortName != 'ORDER_NUM' and sort != ''">
+					${sortName} ${sort}
+				</if>
+			</trim>
+		</trim>
+	</select>
+
+	<select id="detailed_information" resultType="HDAlldataVO"
+		parameterType="map">
+
+		<![CDATA[
+			SELECT
+				ROW_NUMBER() OVER (ORDER BY pn.ORDER_NUM DESC) PRODUCTION_SEQ,
+				pn.ORDER_NUM ORDER_NUM,
+				pn.CONTRACT_NAME CONTRACT_NAME,
+				pn.SALES SALES,
+				pn.ORDER_NAME ORDER_NAME,
+				pn.MANAGER_NAME MANAGER_NAME,
+				pn.REQUEST_DATE REQUEST_DATE,
+				pn.PRODUCTION_DATE PRODUCTION_DATE,
+				decode(pn.ORDER_STATES,'1','완료','미납') ORDER_STATES,
+				pn.PRODUCTION_REMARK PRODUCTION_REMARK,
+				pn.TOTAL_PRICE TOTAL_PRICE,
+				pn.P_DATE P_DATE,
+				pn.REQUEST_EXPECTED REQUEST_EXPECTED,
+				pn.ORDER_DATE ORDER_DATE,
+				oc.ORDER_DELEGATE_NAME ORDER_DELEGATE_NAME,
+				oc.ORDER_LOCATION ORDER_LOCATION,
+				oc.ORDER_TEL ORDER_TEL,
+				oc.ORDER_FAX ORDER_FAX,
+				om.MANAGER_TEL MANAGER_TEL,
+				ps.LOT_NO LOT_NO,
+				ps.ITEM ITEM,
+				ps.SIZE_L SIZE_L,
+				ps.SIZE_S SIZE_S,
+				ps.SIZE_T SIZE_T,
+				ps.SIZE_P SIZE_P,
+				ps.SIZE_M SIZE_M,
+				ps.VOLUME VOLUME,
+				ps.PRICE PRICE,
+				ps.PRODUCTS_REMARK PRODUCTS_REMARK,
+				ps.ORDER_ITEM ORDER_ITEM,
+				ps.T_PRICE T_PRICE,
+				fac.M_NO M_NO,
+				cnee.CONSIGNEE_RANK CONSIGNEE_RANK,
+				cnee.CONSIGNEE_NAME CONSIGNEE_NAME,
+				cnee.CONSIGNEE_TEL CONSIGNEE_TEL,
+				cnee.CONSIGNEE_LOCATION CONSIGNEE_LOCATION,
+				ds.DISPATCHER_COMPANY DISPATCHER_COMPANY,
+				ds.DISPATCHER_NO DISPATCHER_NO,
+				ds.DISPATCHER_TYPE DISPATCHER_TYPE,
+				ds.DISPATCHER_TEL DISPATCHER_TEL,
+				ds.DISPATCHER_FARE DISPATCHER_FARE,
+				ds.DISPATCHER_WEIGHT DISPATCHER_WEIGHT
+			FROM
+				HD_PRODUCTION pn LEFT OUTER JOIN HD_ORDER_COMPANY oc ON pn.ORDER_NUM = oc.ORDER_NUM
+							     LEFT OUTER JOIN HD_MANAGERINFO om ON pn.order_num = om.order_num
+							     LEFT OUTER JOIN HD_PRODUCTS ps ON pn.ORDER_NUM = ps.ORDER_NUM
+							     LEFT OUTER JOIN HD_FACTORY fac ON ps.LOT_NO = fac.LOT_NO
+							     LEFT OUTER JOIN HD_CONSIGNEE cnee ON pn.ORDER_NUM = cnee.ORDER_NUM
+							     LEFT OUTER JOIN HD_DISPATCHER ds ON pn.ORDER_NUM = ds.ORDER_NUM
+		]]>
+
+		<where>
+
+			<if test="order_num != null">
+				pn.order_num = #{order_num}
+			</if>
+
+		</where>
+		<trim prefix="ORDER BY">
+			<if test="sortName != '' and sortName != null">
+				${sortName}
+			</if>
+			<if test="sortName != '' and sortName != null and sort != ''">
+				${sort}
+			</if>
+		</trim>
+
+	</select>
+
+	<select id="stocklist" resultType="HdstockVO">
+	SELECT
+	 
+	 *
+	 
+	FROM
+	
+	hd_stock
+	
+	</select>
+	
+	<insert id="stockinsert" parameterType="HdstockVO">
+	
+	INSERT INTO
+	hd_stock
+	(
+	item,
+	size_l,
+	size_s,
+	size_t,
+	size_p,
+	size_m,
+	volume
+	)
+	VALUES
+	(
+	#{item},
+	#{size_l},
+	#{size_s},
+	#{size_t},
+	#{size_p},
+	#{size_m},
+	#{volume}
+	)
+	
+	
+	</insert>
+	
+	
+	<delete id="stockdelete" parameterType="HdstockVO">
+	
+	DELETE FROM
+	hd_stock
+	WHERE item = #{item}
+		
+	
+	</delete>
+	
+	<update id="updateInventory" parameterType="HdstockVO">
+	
+	UPDATE hd_stock
+	
+	SET
+	item = #{item},
+	size_l = #{size_l},
+	size_s = #{size_s},
+	size_t = #{size_t},
+	size_p = #{size_p},
+	size_m = #{size_m},
+	volume = #{volume}
+	
+	WHERE
+	item = #{item}
+	
+	</update>
+	
+	<delete id="dbdelete" parameterType="HashMap">
+	
+	DELETE FROM
+	${deltbllist}
+	WHERE order_num = #{order_num}
+		
+	
+	</delete>
+	
+</mapper>

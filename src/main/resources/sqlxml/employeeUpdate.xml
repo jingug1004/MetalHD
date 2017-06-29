@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="employeeUpdate">
+
+<update id="updateEmp" parameterType="HdEmployeeVO">
+update emp
+set
+ age = #{age},
+ emp_name = #{emp_name},
+ people_no = #{people_no},
+ eng_name = #{eng_name}
+where 
+ emp_no = #{emp_no}
+</update>
+
+<update id="updateCompany" parameterType="HdEmployeeVO">
+update company
+set
+ entrance_date = #{entrance_date},
+ quit_date = #{quit_date}
+where 
+ emp_no= #{emp_no}
+</update>
+
+<update id="updateHobby" parameterType="HdEmployeeVO">
+update hobby
+set
+ hobby_name = #{hobby_name},
+ special_ability = #{special_ability}
+where
+ emp_no = #{emp_no}
+</update>
+
+<update id="updateMilitary" parameterType="HdEmployeeVO">
+update military
+set
+ arm_service = #{arm_service},
+ military_class = #{military_class},
+ military_reason = #{military_reason},
+ military_start_date = #{military_start_date},
+ military_end_date = #{military_end_date}
+where
+ emp_no = #{emp_no}
+</update>
+
+<update id="updatePi" parameterType="HdEmployeeVo">
+update personal_info
+set
+ address = #{address},
+ handphone_num = #{handphone_num},
+ birthday = #{birthday},
+ gender = #{gender}
+where emp_no = #{emp_no}
+</update>
+
+<update id="updatePm" parameterType="HdEmployeeVO">
+update personnel_management
+set
+ emp_position = #{emp_position},
+ salary = #{salary},
+ depart_name = #{depart_name}
+where
+ emp_no = #{emp_no}
+ </update>
+ 
+<delete id="deleteSchool" parameterType="String">
+delete from academic
+where emp_no = #{emp_no}
+</delete>
+
+<delete id="deleteFamily" parameterType="String">
+delete from family
+where emp_no = #{emp_no}
+</delete>
+
+<delete id="deleteCareer" parameterType="String">
+delete from career
+where emp_no = #{emp_no}
+</delete>
+
+<delete id="deleteLicense" parameterType="String">
+delete from license
+where emp_no = #{emp_no}
+</delete>
+
+
+</mapper>

@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="orderEdit">
+
+	<select id="loglog" parameterType="String" resultType="HdUpdatelogVO">
+	SELECT
+	
+	ORDER_NUM,
+	LOG_REMARK,
+	log_Logininfo
+		
+	FROM
+	HD_UPDATELOG
+	
+	WHERE
+	order_num = #{num}
+	
+	</select>
+
+	<select id="selectOneByNum" parameterType="String" resultType="HdInsertVO">
+		<![CDATA[
+			SELECT
+			 	DISTINCT
+				pn.PRODUCTION_SEQ PRODUCTION_SEQ,
+				pn.ORDER_NUM ORDER_NUM,
+				pn.CONTRACT_NAME CONTRACT_NAME,
+				pn.SALES SALES,
+				pn.ORDER_NAME ORDER_NAME,
+				pn.MANAGER_NAME MANAGER_NAME,
+				pn.REQUEST_DATE REQUEST_DATE,
+				pn.PRODUCTION_DATE PRODUCTION_DATE,
+				pn.ORDER_STATES ORDER_STATES,
+				pn.PRODUCTION_REMARK PRODUCTION_REMARK,
+				pn.TOTAL_PRICE TOTAL_PRICE,
+				pn.P_DATE P_DATE,
+				pn.REQUEST_EXPECTED REQUEST_EXPECTED,
+				pn.ORDER_DATE ORDER_DATE,
+				oc.ORDER_DELEGATE_NAME ORDER_DELEGATE_NAME,
+				oc.ORDER_LOCATION ORDER_LOCATION,
+				oc.ORDER_TEL ORDER_TEL,
+				oc.ORDER_FAX ORDER_FAX,
+				om.MANAGER_TEL MANAGER_TEL,
+				cnee.CONSIGNEE_RANK CONSIGNEE_RANK,
+				cnee.CONSIGNEE_NAME CONSIGNEE_NAME,
+				cnee.CONSIGNEE_TEL CONSIGNEE_TEL,
+				cnee.CONSIGNEE_LOCATION CONSIGNEE_LOCATION,
+				ds.DISPATCHER_COMPANY DISPATCHER_COMPANY,
+				ds.DISPATCHER_NO DISPATCHER_NO,
+				ds.DISPATCHER_TYPE DISPATCHER_TYPE,
+				ds.DISPATCHER_TEL DISPATCHER_TEL,
+				ds.DISPATCHER_FARE DISPATCHER_FARE,
+				ds.DISPATCHER_WEIGHT DISPATCHER_WEIGHT
+				 
+			FROM
+				HD_PRODUCTION pn LEFT OUTER JOIN HD_ORDER_COMPANY oc ON pn.ORDER_NUM = oc.ORDER_NUM
+				                 LEFT OUTER JOIN HD_MANAGERINFO om ON pn.MANAGER_NAME = om.MANAGER_NAME
+				                 LEFT OUTER JOIN HD_CONSIGNEE cnee ON pn.ORDER_NUM = cnee.ORDER_NUM
+				                 LEFT OUTER JOIN HD_DISPATCHER ds ON pn.ORDER_NUM = ds.ORDER_NUM
+            WHERE pn.ORDER_NUM = #{num}
+		]]>
+	</select>
+
+	<select id="selectProductsByNum" parameterType="String"
+		resultType="HdProductsVO">
+		Select * from
+		HD_PRODUCTS where order_num = #{num} order by
+		products_seq asc
+	</select>
+
+	<select id="selectListAll" resultType="HDAlldataVO"> 
+	   select 
+	   
+	   HD_PRODUCTS.order_Num order_num,
+	   HD_PRODUCTION.order_Name order_name,
+	   HD_PRODUCTS.item item,
+	   HD_PRODUCTS.size_l size_l,
+	   HD_PRODUCTS.size_s size_s,
+	   HD_PRODUCTS.volume volume,
+	   HD_PRODUCTION.request_date request_date
+	   
+	  from HD_PRODUCTION, HD_PRODUCTS
+ 	  where HD_PRODUCTION.order_num= HD_PRODUCTS.order_num order by order_num desc
+	</select>
+	
+
+	<update id="updateConsignee" parameterType="HdInsertVO">
+		update hd_consignee
+		set
+		consignee_Rank = #{consignee_Rank},
+		consignee_Name =
+		#{consignee_Name},
+		consignee_Tel = #{consignee_Tel},
+		consignee_Location
+		= #{consignee_Location}
+		where
+		order_Num = #{order_Num}
+
+	</update>
+
+	<update id="updateDispatcher" parameterType="HdInsertVO">
+		update hd_dispatcher
+		set
+		dispatcher_Company = #{dispatcher_Company},
+		dispatcher_No =
+		#{dispatcher_No},
+		dispatcher_Type = #{dispatcher_Type},
+		dispatcher_Tel =
+		#{dispatcher_Tel},
+		dispatcher_Fare = #{dispatcher_Fare},
+		dispatcher_Weight = #{dispatcher_Weight}
+		where
+		order_Num = #{order_Num}
+	</update>
+
+	<update id="updateManagerinfo" parameterType="HdInsertVO">
+		update
+		hd_managerinfo
+		set
+		order_Name = #{order_Name},
+		manager_Name =
+		#{manager_Name},
+		manager_Tel = #{manager_Tel}
+		where
+		order_Num =
+		#{order_Num}
+	</update>
+
+	<update id="updateOrderCompany" parameterType="HdInsertVO">
+		update
+		hd_order_company
+		set
+		order_Name = #{order_Name},
+		order_delegate_Name =
+		#{order_delegate_Name},
+		order_Location = #{order_Location},
+		order_tel =
+		#{order_tel}
+		where
+		order_Num = #{order_Num}
+	</update>
+
+	<update id="updateProduction" parameterType="HdInsertVO">
+		update hd_production
+		set
+		contract_Name = #{contract_Name},
+		sales=#{sales},
+		order_Name = #{order_Name},
+		manager_Name =
+		#{manager_Name},
+		request_Date = #{request_Date},
+		production_Date =
+		#{production_Date},
+		order_States = #{order_States},
+		production_Remark =
+		#{production_Remark},
+		p_Date = #{p_Date},
+		<!-- total_Price = #{total_Price}, -->
+		request_Expected = #{request_Expected}
+		where
+		order_Num = #{order_Num}
+	</update>
+
+	<insert id="updateUpdateLog" parameterType="HdInsertVO">
+
+		INSERT
+		INTO
+		HD_UPDATELOG
+		(
+		order_num,
+		log_remark,
+		log_logininfo
+		)
+		VALUES
+		(
+		#{order_Num},
+		#{log_Remark},
+		#{log_Logininfo}
+		)
+	</insert>
+
+	<update id="updateList" parameterType="HdProductsVO">
+		update hd_products
+		set
+		order_Item = #{order_item},
+		item = #{item},
+		size_L = #{size_l},
+		size_S =
+		#{size_s},
+		size_T = #{size_t},
+		size_P = #{size_p},
+		size_M = #{size_m},
+		volume = #{volume},
+		price = #{price},
+		products_Remark =
+		#{products_remark},
+		lot_No = #{lot_no}
+		where
+		products_seq =
+		#{products_seq}
+	</update>
+
+	<delete id="orderDelete" parameterType="HdProductsVO">
+		delete from hd_products
+		where products_seq = #{products_seq} and order_num = #{order_num}
+	</delete>
+
+
+	<update id="mergeList" parameterType="HdProductsVO">
+		merge into hd_products t
+		using (select #{products_seq} products_seq from dual) a
+		on
+		(a.products_seq = t.products_seq)
+
+		when matched then
+		update
+		set
+		order_Item
+		= #{order_item},
+		item =
+		#{item},
+		size_L = #{size_l},
+		size_S =
+		#{size_s},
+		size_T = #{size_t},
+		size_P = #{size_p},
+		size_M = #{size_m},
+		volume =
+		#{volume},
+		price =
+		#{price},
+		products_Remark =
+		#{products_remark},
+		lot_No =
+		#{lot_no}
+		where
+		products_seq =
+		#{products_seq}
+
+		when not matched then
+		insert(
+		order_Num,
+		order_Item,
+		item,
+		size_L,
+		size_S,
+		size_T,
+		size_P,
+		size_M,
+		volume,
+		price,
+		products_Remark,
+		lot_No
+		)
+		values(
+		#{order_num},
+		#{order_item},
+		#{item},
+		#{size_l},
+		#{size_s},
+		#{size_t},
+		#{size_p},
+		#{size_m},
+		#{volume},
+		#{price},
+		#{products_remark},
+		#{lot_no}
+		)
+	</update>
+
+	<insert id="updatelog" parameterType="HdInsertVO">
+		INSERT
+		INTO
+		HD_UPDATELOG
+		(
+		order_num,
+		log_remark,
+		log_logininfo
+		)
+		VALUES
+		(
+		#{order_Num},
+		#{log_Remark},
+		#{log_Logininfo}
+		)
+
+	</insert>
+	
+	<update id="commentprocessing" parameterType="HdInsertVO">
+	MERGE
+	INTO
+	hd_comment
+	USING DUAL
+	ON(order_num = #{order_Num})
+	
+	WHEN MATCHED THEN
+		UPDATE SET
+			order_comment = #{order_comment},
+			log_logininfo = #{log_Logininfo}
+	
+	WHEN NOT MATCHED THEN
+		INSERT
+		(
+		order_num,
+		order_comment,
+		log_logininfo
+		)
+		VALUES
+		(
+		#{order_Num},
+		#{order_comment},
+		#{log_Logininfo}
+		)
+	
+	</update>
+	
+	<select id="comment" parameterType="String" resultType="HdCommentVO">
+	SELECT
+	
+	*
+	
+	FROM
+	
+	hd_comment
+	
+	WHERE
+	
+	order_num = #{order_Num}
+	</select>
+
+
+</mapper>

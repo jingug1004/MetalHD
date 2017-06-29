@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="orderInsert">
+
+	<insert id="insertConsignee" parameterType="HdInsertVO">
+		insert into
+		hd_consignee(
+		order_Num,
+		consignee_Rank,
+		consignee_Name,
+		consignee_Tel,
+		consignee_Location
+		)
+		values(
+		#{order_Num},
+		#{consignee_Rank},
+		#{consignee_Name},
+		#{consignee_Tel},
+		#{consignee_Location}
+		)
+
+
+	</insert>
+
+	<insert id="insertDispatcher" parameterType="HdInsertVO">
+		insert into
+		hd_dispatcher(
+		order_Num,
+		dispatcher_Company,
+		dispatcher_No,
+		dispatcher_Type,
+		dispatcher_Tel,
+		dispatcher_Fare,
+		dispatcher_Weight
+		)
+		values(
+		#{order_Num},
+		#{dispatcher_Company},
+		#{dispatcher_No},
+		#{dispatcher_Type},
+		#{dispatcher_Tel},
+		#{dispatcher_Fare},
+		#{dispatcher_Weight}
+		)
+
+
+	</insert>
+
+	<insert id="insertManagerinfo" parameterType="HdInsertVO">
+		insert into
+		hd_managerinfo(
+		order_Num,
+		order_Name,
+		manager_Name,
+		manager_Tel
+		)
+		values(
+		#{order_Num},
+		#{order_Name},
+		#{manager_Name},
+		#{manager_Tel}
+		)
+
+
+	</insert>
+
+	<insert id="insertOrderCompany" parameterType="HdInsertVO">
+		insert into
+		hd_order_company(
+		order_Num,
+		order_Name,
+		order_delegate_Name,
+		order_Location,
+		order_tel
+		)
+		values(
+		#{order_Num},
+		#{order_Name},
+		#{order_delegate_Name},
+		#{order_Location},
+		#{order_tel}
+		)
+	</insert>
+
+	<insert id="insertProduction" parameterType="HdInsertVO">
+		insert into
+		hd_production(
+		order_Num,
+		contract_Name,
+		sales,
+		order_Name,
+		manager_Name,
+		request_Date,
+		production_Date,
+		order_States,
+		production_Remark,
+		p_Date,
+		<!-- total_Price, -->
+		order_Date,
+		request_Expected
+		)
+		values(
+		#{order_Num},
+		#{contract_Name},
+		#{sales},
+		#{order_Name},
+		#{manager_Name},
+		#{request_Date},
+		#{production_Date},
+		#{order_States},
+		#{production_Remark},
+		#{p_Date},
+		<!-- #{total_Price}, -->
+		#{order_Date},
+		#{request_Expected}
+		)
+
+
+	</insert>
+	<insert id="insertUpdateLog" parameterType="HdInsertVO">
+		insert into
+		hd_updatelog(
+		order_Num,
+		log_Remark,
+		log_Logininfo
+		)
+		values(
+		#{order_Num},
+		#{log_Remark},
+		#{log_Logininfo}
+		)
+
+
+	</insert>
+
+
+	<insert id="insertList" parameterType="HdProductsVO">
+		insert into hd_products (
+		order_Num,
+		order_Item,
+		item,
+		size_L,
+		size_S,
+		size_T,
+		size_P,
+		size_M,
+		volume,
+		price,
+		products_Remark,
+		lot_No
+		)
+		values(
+		#{order_num},
+		#{order_item},
+		#{item},
+		#{size_l},
+		#{size_s},
+		#{size_t},
+		#{size_p},
+		#{size_m},
+		#{volume},
+		#{price},
+		#{products_remark},
+		#{lot_no}
+		)
+	</insert>
+
+	<select id="selectNum" resultType="int">
+		select 
+			NVL2(max(SUBSTR(order_num,-2)),max(SUBSTR(order_num,-2)),0)
+		from
+			hd_production
+    	where 
+    		order_num like
+			'%'||(to_char(SYSDATE,'YY-MMdd'))||'%'
+				
+	</select>
+
+	<select id="getSelect" resultType="hashmap">
+		<![CDATA[
+			SELECT
+				oc.ORDER_NAME 				ORDER_NAME,
+				om.MANAGER_NAME 			MANAGER_NAME,
+				om.MANAGER_TEL 				MANAGER_TEL
+			FROM
+				HD_ORDER_COMPANY oc LEFT OUTER JOIN HD_MANAGERINFO om on oc.ORDER_NAME = om.ORDER_NAME
+		]]>
+
+		<where>
+			<if
+				test="order_name != '' and order_name != null and new_name == 'order_name'">
+				<![CDATA[
+					replace(oc.ORDER_NAME, ' ', '') like '%' || replace(#{order_name}, ' ', '') || '%'
+				]]>
+			</if>
+		</where>
+
+		GROUP BY
+		oc.ORDER_NAME, om.MANAGER_NAME, om.MANAGER_TEL
+
+		ORDER BY
+		ORDER_NAME asc
+	</select>
+
+	<select id="getOC" resultType="hashmap" parameterType="String">
+		<![CDATA[
+			SELECT ORDER_NAME
+				,ORDER_DELEGATE_NAME
+				,ORDER_LOCATION
+				,ORDER_TEL
+				,ORDER_FAX
+			FROM 
+				HD_ORDER_COMPANY
+			WHERE
+				ORDER_NAME = #{order_name}
+		]]>
+	</select>
+
+
+<!-- 	<select id="selectNum"  resultType="String">
+
+	SELECT ORDER_NUM FROM HD_PRODUCTS WHERE ORDER_NUM =(SELECT MAX(ORDER_NUM) AS
+	ORDER_NUM FROM HD_PRODUCTS);
+
+	</select>  -->
+</mapper>

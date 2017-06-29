@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
+
+
+	<!-- namespace : jdbc, util 추가 -->
+	<!-- 여기가 DB연결하기위한 작업 시작 -->
+	<util:properties id="db" location="classpath:properties/db.properties"/>
+
+	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="#{db['db.driver']}" />
+		<property name="url" value="#{db['db.url']}" />
+		<property name="username" value="#{db['db.username']}" />
+		<property name="password" value="#{db['db.password']}" />
+		<property name="defaultAutoCommit" value="#{db['db.defaultAutoCommit']}" />
+	</bean>
+
+<!-- 	<bean id="dataSource" class="net.sf.log4jdbc.Log4jdbcProxyDataSource"> -->
+<!-- 		<constructor-arg ref="dataSourceSpied" /> -->
+<!-- 		<property name="logFormatter"> -->
+<!-- 			<bean class="net.sf.log4jdbc.tools.Log4JdbcCustomFormatter"> -->
+<!-- 				<property name="loggingType" value="MULTI_LINE" /> -->
+<!-- 				<property name="sqlPrefix" value="SQL         :  " /> -->
+<!-- 			</bean> -->
+<!-- 		</property> -->
+<!-- 	</bean> -->
+
+	<!-- 트랜잭션 -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<!-- mybatis세션설정 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<!-- 아래부분은 매핑할 xml파일이 있는 패키지경로를 설정한다. -->
+		<!-- VO패키지 -->
+		<property name="typeAliasesPackage" value="kr.co.hdmetal.VO" />
+		<!-- XML패키지 -->
+		<property name="mapperLocations" value="classpath:sqlxml/*.xml" />
+	</bean>
+
+	<!-- sql템플릿 -->
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
+
+	<!-- 테이블 자동 생성 <jdbc:initialize-database data-source="dataSource"> <jdbc:script 
+		location="classpath:schema/schema.sql" /> </jdbc:initialize-database> -->
+
+</beans>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="employeeEdit">
+
+<select id="employeeList" resultType="HdEmployeeVO">
+ select
+ e.emp_no,
+ e.emp_name,
+ e.age,
+ pm.depart_name,
+ pm.emp_position
+ from
+ emp e left outer join PERSONNEL_MANAGEMENT pm
+ on e.emp_no=pm.emp_no
+</select>
+
+<select id="employeeAll" parameterType="String"  resultType="HdEmployeeVO">
+<![CDATA[
+			   select
+			       distinct
+			 	     e.emp_no,
+			 	     e.age,
+			 	     e.emp_name,
+			 	     e.people_no,
+			 	     e.eng_name,
+			 	     pm.emp_position,
+			 	     pm.salary,
+			 	     pm.depart_name,
+			 	     c.entrance_date,
+			 	     c.quit_date,
+			 	     h.hobby_name,
+			 	     h.special_ability,
+			 	     m.arm_service,
+			 	     m.military_class,
+			 	     m.military_reason,
+			 	     m.military_start_date,
+			 	     m.military_end_date,
+			 	     pi.address,
+			 	     pi.handphone_num,
+			 	     pi.birthday,
+			 	     pi.gender
+                from
+			       emp e left outer join personnel_management pm ON e.emp_no=pm.emp_no
+			             left outer join company c ON e.emp_no=c.emp_no
+			             left outer join hobby h ON e.emp_no=h.emp_no
+			             left outer join military m ON e.emp_no=m.emp_no
+			             left outer join personal_info pi ON e.emp_no=pi.emp_no
+			    where e.emp_no=#{emp_no}
+			            
+]]>                   
+</select>
+
+<select id="empSchoolSelect" parameterType="String" resultType="HdEmpAcademicVO">
+     select * from academic where emp_no=#{emp_no}
+</select>
+
+<select id="empCareerSelect" parameterType="String" resultType="HdEmpCareerVO">
+     select * from career where emp_no=#{emp_no}
+</select>
+
+<select id="empFamilySelect" parameterType="String" resultType="HdEmpFamilyVO">
+     select * from family where emp_no=#{emp_no}
+</select>
+
+<select id="empLicenseSelect" parameterType="String" resultType="HdEmpLicenseVO">
+     select * from license where emp_no=#{emp_no}
+</select>
+
+<select id="imageSelect" parameterType="String" resultType="HdempFileVO">
+      select * from emp_file
+      where emp_no = #{emp_no}
+</select>
+
+</mapper>

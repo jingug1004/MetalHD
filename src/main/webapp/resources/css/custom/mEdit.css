@@ -1,0 +1,18 @@
+@CHARSET "UTF-8";
+
+table {
+	border: 1px solid;
+	white-space: nowrap !important;
+}
+
+td {
+	text-align: center !important;
+	vertical-align: middle !important;
+}
+
+th {
+	text-align: center !important;
+	vertical-align: middle !important;
+	white-space: nowrap !important;
+	
+}
